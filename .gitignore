@@ -144,3 +144,7 @@ ai_agents/*.pcm
 ai_agents/*.pem
 /.trae
 .env
+**/.env
+**/.env.*
+.env.local
+.env.*.local
