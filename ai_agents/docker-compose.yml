@@ -6,6 +6,10 @@ services:
     tty: true
     stdin_open: true
     restart: always
+    environment:
+      - UV_HTTP_TIMEOUT=600
+      - UV_INDEX_URL=https://pypi.tuna.tsinghua.edu.cn/simple
+      - BUN_INSTALL_TIMEOUT=300
     ports:
       - "${GRAPH_DESIGNER_SERVER_PORT}:${GRAPH_DESIGNER_SERVER_PORT}"
       - "3000:3000"

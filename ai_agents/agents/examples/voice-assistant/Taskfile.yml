@@ -9,7 +9,7 @@ tasks:
     internal: true
     dir: ../../../playground
     cmds:
-      - bun install --verbose
+      - npm install
 
   install-tenapp:
     desc: install tenapp dependencies
@@ -58,7 +58,7 @@ tasks:
     desc: run frontend
     dir: ../../../playground
     cmds:
-      - bun run dev
+      - npm run dev
 
   run-api-server:
     desc: run api server

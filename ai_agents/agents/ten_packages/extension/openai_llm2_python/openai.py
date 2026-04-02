@@ -80,10 +80,6 @@ class OpenAIChatGPT:
         self.client = AsyncOpenAI(
             api_key=config.api_key,
             base_url=config.base_url,
-            default_headers={
-                "api-key": config.api_key,
-                "Authorization": f"Bearer {config.api_key}",
-            },
             http_client=self.http_client,
         )
 
@@ -228,12 +224,21 @@ class OpenAIChatGPT:
                 self.ten_env.log_debug(f"set openai param: {key} = {value}")
                 req[key] = value
 
-        self.ten_env.log_info(f"Requesting chat completions with: {req}")
+        import time
+        request_start_time = time.time()
+        self.ten_env.log_info(f"========== [OpenAI Request Start] ==========")
+        self.ten_env.log_info(f"Request Time: {time.strftime('%Y-%m-%d %H:%M:%S')}")
+        self.ten_env.log_info(f"Model: {req['model']}")
+        self.ten_env.log_info(f"Messages Count: {len(req['messages'])}")
+        self.ten_env.log_info(f"Full Request: {req}")
+        self.ten_env.log_info(f"==========================================")
 
         try:
             response: AsyncStream[ChatCompletionChunk] = (
                 await self.client.chat.completions.create(**req)
             )
+            request_duration = time.time() - request_start_time
+            self.ten_env.log_info(f"[OpenAI] Request successful, took {request_duration:.2f}s")
 
             full_content = ""
             # Check for tool calls
@@ -448,4 +453,17 @@ class OpenAIChatGPT:
                 created=last_chat_completion.created,
             )
         except Exception as e:
+            request_duration = time.time() - request_start_time
+            self.ten_env.log_error(f"========== [OpenAI Request FAILED] ==========")
+            self.ten_env.log_error(f"Error Time: {time.strftime('%Y-%m-%d %H:%M:%S')}")
+            self.ten_env.log_error(f"Duration: {request_duration:.2f}s")
+            self.ten_env.log_error(f"Error Type: {type(e).__name__}")
+            self.ten_env.log_error(f"Error Message: {str(e)}")
+
+            # 如果是速率限制错误,额外打印
+            if "429" in str(e) or "rate" in str(e).lower():
+                self.ten_env.log_error(f"!!! RATE LIMIT ERROR !!!")
+                self.ten_env.log_error(f"建议: 1. 升级API配额  2. 减少请求频率  3. 使用官方OpenAI API")
+
+            self.ten_env.log_error(f"============================================")
             raise RuntimeError(f"CreateChatCompletion failed, err: {e}") from e

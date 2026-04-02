@@ -12,7 +12,7 @@
               "addon": "websocket_server",
               "extension_group": "default",
               "property": {
-                "port": 8765,
+                "port": 8637,
                 "host": "127.0.0.1",
                 "sample_rate": 16000,
                 "channels": 1,
@@ -27,7 +27,7 @@
               "property": {
                 "params": {
                   "api_key": "${env:DEEPGRAM_API_KEY}",
-                  "language": "en-US",
+                  "language": "zh-CN",
                   "model": "nova-3"
                 }
               }
@@ -38,7 +38,7 @@
               "addon": "openai_llm2_python",
               "extension_group": "chatgpt",
               "property": {
-                "base_url": "https://api.openai.com/v1",
+                "base_url": "${env:OPENAI_API_BASE}",
                 "api_key": "${env:OPENAI_API_KEY}",
                 "frequency_penalty": 0.9,
                 "model": "${env:OPENAI_MODEL}",
